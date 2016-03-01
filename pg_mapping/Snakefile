@@ -1,0 +1,47 @@
+import glob
+
+DATASETS = ['agrobiodiversity_species_richness',
+            'carbon_sequestration',
+            'cultural_landscape_index_agro',
+            'cultural_landscape_index_forest',
+            'erosion_prevention',
+            'flood_regulation_supply',
+            'floodregulation',
+            'megafauna',
+            'nature_tourism',
+            'pollination_flows',
+            'pollination_visitprob',
+            'species_richness_farmland_birds_original1',
+            'species_richness_vascular_plants']
+
+rule all:
+  input:
+    expand("data/{dataset}.{ext}", dataset=DATASETS, ext=['tif', 'tfw'])
+
+# Rule to extract the data from from the 7z archive
+rule extract:
+    input:
+        "PG mapping for LUKE.7z"
+    output:
+        "data/org"
+    log:
+        "log/extract.log"
+    message: "Extracting .tif and .tfw files from {input}."
+    shell:
+        # Extra quotes needed because of the whitespace in the name. NOTE:
+        # This assumes that 7zip is around.
+        # NOTE: we're only extracting tif- and tfw-files. ArcGIS-specific
+        # .aux.xml and .ovr files are not extracted.
+        "7za e '{input}' -o{output} *.tif *.tfw -r >& {log}"
+
+rule rename:
+    input:
+        "data/org",
+        src_rasters=glob.glob("data/org/*")
+    output:
+        "data/pges"
+    log:
+        "log/rename.log"
+    message: "Renaming files in {input}"
+    script:
+        "scripts/rename.py"
