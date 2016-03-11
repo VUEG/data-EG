@@ -6,30 +6,16 @@ HTTP = HTTPRemoteProvider()
 BASE_URL = "datadryad.org/bitstream/handle/10255/dryad.98949"
 ZIP_URL = BASE_URL + "/" + "WoodProductionMaps.zip"
 README_FILE = "README.txt"
-
+README_URL = BASE_URL + "/" + "README.txt"
 
 rule get_data:
     input:
-        HTTP.remote(ZIP_URL, keep_local=True)
+        zip=HTTP.remote(ZIP_URL, keep_local=False),
+        readme=HTTP.remote(README_URL, keep_local=False)
     output:
         "data"
     log:
         "log/getdata.log"
     run:
-        shell("unzip {input} -d {output} >& {log}")
-
-# Get the data from Dryad
-#rule old_download:#
-#    input:
-#        zip_url=BASE_URL + "/" + ZIP_FILE,
-#        zip_name=ZIP_FILE,
-#        readme_url=BASE_URL + "/" + README_FILE,
-#        readme_name=README_FILE
-#    output:
-#        "data"
-#    log:
-#        "log/download.log"
-#    message: "Downloading forest productivity data from Dryad."
-#    shell:
-#        "wget '{input.zip_url}' -P {output} -O {input.zip_name} -o {log}"
-#        "wget '{input.readme_url}' -P {output} -O {input.readme_name} -o {log}"
+        shell("unzip {input.zip} -d {output} >& {log}")
+        shell("mv {input.readme} {output} >& {log}")
