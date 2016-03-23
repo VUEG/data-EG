@@ -1,0 +1,24 @@
+# Rule to extract the data from from the zip archive.
+rule extract:
+    input:
+        "data/originals/Archive.zip"
+    output:
+        "data"
+    log:
+        "log/extract.log"
+    message: "Extracting shapefiles from {input}."
+    shell:
+        # Extra quotes needed because of potential whitespace in the name.
+        "unzip -o '{input}' -d {output} >& {log}"
+
+# Rule convert the Excel file containing the spcies names in CSV.
+rule spconvert:
+    input:
+        "data/originals/megafauna_sp.xlsx"
+    output:
+        "data/megafauna_sp.csv"
+    log:
+        "log/spconvert.log"
+    message: "converting {input} to CSV."
+    script:
+        "scripts/spconvert.py"
