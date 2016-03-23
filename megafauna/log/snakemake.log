@@ -1,0 +1,16 @@
+[Wed Mar 23 13:47:09 2016] Provided cores: 1
+[Wed Mar 23 13:47:09 2016] Rules claiming more threads will be scaled down.
+[Wed Mar 23 13:47:09 2016] Job counts:
+	count	jobs
+	1	extract
+	1
+[Wed Mar 23 13:47:09 2016] Extracting shapefiles from data/originals/Archive.zip.
+[Wed Mar 23 13:47:09 2016] 1 of 1 steps (100%) done
+[Wed Mar 23 15:10:55 2016] Provided cores: 1
+[Wed Mar 23 15:10:55 2016] Rules claiming more threads will be scaled down.
+[Wed Mar 23 15:10:55 2016] Job counts:
+	count	jobs
+	1	spconvert
+	1
+[Wed Mar 23 15:10:55 2016] converting data/originals/megafauna_sp.xlsx to CSV.
+[Wed Mar 23 15:10:55 2016] 1 of 1 steps (100%) done
