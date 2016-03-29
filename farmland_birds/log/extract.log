@@ -1,0 +1,23 @@
+
+7-Zip (a) [64] 15.14 : Copyright (c) 1999-2015 Igor Pavlov : 2015-12-31
+p7zip Version 15.14 (locale=en_US.UTF-8,Utf16=on,HugeFiles=on,64 bits,4 CPUs x64)
+
+Scanning the drive for archives:
+1 file, 222231891 bytes (212 MiB)
+
+Extracting archive: data/originals/birds.7z
+--
+Path = data/originals/birds.7z
+Type = 7z
+Physical Size = 222231891
+Headers Size = 130769
+Method = LZMA:24
+Solid = +
+Blocks = 1
+
+Everything is Ok
+
+Folders: 1757
+Files: 26436
+Size:       2074659955
+Compressed: 222231891
