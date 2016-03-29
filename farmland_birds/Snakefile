@@ -1,0 +1,25 @@
+# Rule to extract the data from from the 7z archive
+rule extract:
+    input:
+        "data/originals/birds.7z"
+    output:
+        "data"
+    log:
+        "log/extract.log"
+    message: "Extracting AIGs from {input}."
+    shell:
+        # Extra quotes needed because of the whitespace in the name.
+        # NOTE: This assumes that 7zip is around.
+        "7za x '{input}' -o{output} -r -aoa -mmt{threads} >& {log}"
+
+# Rule convert the Excel file containing the spcies names in CSV.
+rule spconvert:
+    input:
+        "data/originals/megafauna_sp.xlsx"
+    output:
+        "data/megafauna_sp.csv"
+    log:
+        "log/spconvert.log"
+    message: "converting {input} to CSV."
+    script:
+        "scripts/spconvert.py"
