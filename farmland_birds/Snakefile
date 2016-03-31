@@ -10,16 +10,31 @@ rule extract:
     shell:
         # Extra quotes needed because of the whitespace in the name.
         # NOTE: This assumes that 7zip is around.
-        "7za x '{input}' -o{output} -r -aoa -mmt{threads} >& {log}"
+        # NOTE: Only subfolder birds/output and ReadMe.xlsx are actually extracted.
+        "7za x '{input}' birds/output birds/ReadMe.xlsx -o{output} -r -aoa -mmt{threads} >& {log}"
 
-# Rule convert the Excel file containing the spcies names in CSV.
+# Rule to convert the Excel file containing the species names into CSV.
 rule spconvert:
     input:
-        "data/originals/megafauna_sp.xlsx"
+        "data/birds/ReadMe.xlsx"
     output:
-        "data/megafauna_sp.csv"
+        "data/birds/farmland_birds_sp.csv"
     log:
         "log/spconvert.log"
     message: "converting {input} to CSV."
     script:
         "scripts/spconvert.py"
+
+# Rule to translate a filtered set of bird species distributions from AIG to
+# GeoTIFFs. File names will be replaced with the species name.
+rule sptranslate:
+    input:
+        input_dir='data/birds/output',
+        sp_data='data/birds/farmland_birds_sp.csv'
+    output:
+        "data/birds"
+    log:
+        "log/sptranslate.log"
+    message: "Translating files to GeoTIFF"
+    script:
+        "scripts/sptranslate.py"
