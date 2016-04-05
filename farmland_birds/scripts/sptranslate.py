@@ -20,9 +20,9 @@ def quote_item(item):
 input_dir = snakemake.input['input_dir'] if 'snakemake' in sys.modules and hasattr(snakemake, "input") else "data/birds/output"
 sp_data_file = snakemake.input['sp_data'] if 'snakemake' in sys.modules and hasattr(snakemake, "input") else "data/birds/farmland_birds_sp.csv"
 output_dir = snakemake.output[0] if 'snakemake' in sys.modules and hasattr(snakemake, "output") else "data/birds"
-log_file = snakemake.log[0] if 'snakemake' in sys.modules and hasattr(snakemake, "output") else "log/sptranslate.log"
+log_file = snakemake.log[0] if 'snakemake' in sys.modules and hasattr(snakemake, "log") else "log/sptranslate.log"
 
-logger = logging.getLogger("")
+logger = logging.getLogger("sptranslate")
 logger.setLevel(logging.DEBUG)
 logFormatter = logging.Formatter("%(asctime)s [%(levelname)-5.5s]  %(message)s")
 
