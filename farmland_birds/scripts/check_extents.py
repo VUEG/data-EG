@@ -2,8 +2,10 @@
 
 # Run pip3 install -r requirements.txt first
 import glob
+import logging
 import pprint
 import rasterio
+import sys
 
 
 """ Check that the extent of all translated files matches.
@@ -17,8 +19,27 @@ def add_item(dic, key, value):
         dic[key] = [value]
     return dic
 
-input_dir = "data/birds/"
-bird_rasters = glob.glob(input_dir + "*.tif")
+# Get the inputs and outputs
+input_dir = snakemake.input[0] if 'snakemake' in sys.modules and hasattr(snakemake, "input") else "data/birds"
+log_file = snakemake.log[0] if 'snakemake' in sys.modules and hasattr(snakemake, "log") else "log/extents.log"
+
+logger = logging.getLogger("check_extent")
+logger.setLevel(logging.DEBUG)
+logFormatter = logging.Formatter("%(asctime)s [%(levelname)-5.5s]  %(message)s")
+
+fileHandler = logging.FileHandler(log_file)
+fileHandler.setFormatter(logFormatter)
+logger.addHandler(fileHandler)
+
+consoleHandler = logging.StreamHandler()
+consoleHandler.setFormatter(logFormatter)
+logger.addHandler(consoleHandler)
+
+bird_rasters = glob.glob(input_dir + "/*.tif")
+
+if len(bird_rasters) == 0:
+    logger.error("No GeoTIFFs found in the input folder")
+    sys.exit(0)
 
 # Make lists to holds the bound values
 minx = {}
@@ -37,22 +58,22 @@ for raster in bird_rasters:
 print("{0} rasters found in {1}".format(len(bird_rasters), input_dir))
 
 if len(minx.keys()) > 1:
-    print("Multiple minx found")
+    logger.warning("Multiple minx found")
     pprint.pprint(minx)
 else:
-    print("Only one minx found: {0}".format(list(minx)[0]))
+    logger.info("Only one minx found: {0}".format(list(minx)[0]))
 if len(miny.keys()) > 1:
-    print("Multiple miny found")
+    logger.warning("Multiple miny found")
     pprint.pprint(miny)
 else:
-    print("Only one miny found: {0}".format(list(miny)[0]))
+    logger.info("Only one miny found: {0}".format(list(miny)[0]))
 if len(maxx.keys()) > 1:
-    print("Multiple maxx found")
+    logger.warning("Multiple maxx found")
     pprint.pprint(maxx)
 else:
-    print("Only one maxx found: {0}".format(list(maxx)[0]))
+    logger.info("Only one maxx found: {0}".format(list(maxx)[0]))
 if len(maxy.keys()) > 1:
-    print("Multiple maxy found")
+    logger.warning("Multiple maxy found")
     pprint.pprint(maxy)
 else:
-    print("Only one maxy found: {0}".format(list(maxy)[0]))
+    logger.info("Only one maxy found: {0}".format(list(maxy)[0]))

@@ -1,3 +1,15 @@
+# Rule to checkt the extents of tranlsated bird files.
+rule check_extents:
+    input:
+        "data/birds"
+    output:
+        "data/birds"
+    log:
+        "log/extents.log"
+    message: "Checking bird raster extents..."
+    script:
+        "scripts/check_extents.py"
+
 # Rule to extract the data from from the 7z archive
 rule extract:
     input:
