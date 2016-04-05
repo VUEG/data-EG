@@ -1,4 +1,5 @@
 Cython>=0.23
 pandas>=0.18
+rasterio>=0.32
 snakemake>=3.6.0
 xlrd>=0.9.4
