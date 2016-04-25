@@ -1,4 +1,7 @@
+import errno
 import glob
+import os
+import shutil
 
 DATASETS = ['agrobiodiversity_species_richness',
             'carbon_sequestration',
@@ -14,16 +17,26 @@ DATASETS = ['agrobiodiversity_species_richness',
             'species_richness_farmland_birds_original1',
             'species_richness_vascular_plants']
 
+# Custom function for "mkdir -p" behaviour in Python
+def mkdir_p(path):
+    try:
+        os.makedirs(path)
+    except OSError as exc:  # Python >2.5
+        if exc.errno == errno.EEXIST and os.path.isdir(path):
+            pass
+        else:
+            raise
+
 rule all:
   input:
-    expand("data/{dataset}.{ext}", dataset=DATASETS, ext=['tif', 'tfw'])
+    expand("data/pges/{dataset}.{ext}", dataset=DATASETS, ext=['tif'])
 
 # Rule to extract the data from from the 7z archive
 rule extract:
     input:
-        "PG mapping for LUKE.7z"
+        "data/PG mapping for LUKE.7z"
     output:
-        "data/org"
+        temp("data/org")
     log:
         "log/extract.log"
     message: "Extracting .tif and .tfw files from {input}."
@@ -34,14 +47,33 @@ rule extract:
         # .aux.xml and .ovr files are not extracted.
         "7za e '{input}' -o{output} *.tif *.tfw -r >& {log}"
 
-rule rename:
+# Rule to translate all rasters using compression. Also, translation makes
+# the use of TFW files unnecessary. Rename the files at the same time: get rid
+# of of whitespaces and put names in full lower case.
+rule translate:
     input:
-        "data/org",
-        src_rasters=glob.glob("data/org/*")
+        dir="data/org"
     output:
-        "data/pges"
+        dir="data/pges",
+        dst_rasters=expand("data/pges/{dataset}.{ext}", dataset=DATASETS, ext=['tif'])
     log:
-        "log/rename.log"
-    message: "Renaming files in {input}"
-    script:
-        "scripts/rename.py"
+        "log/translate.log"
+    message: "Translating files in {input.dir}"
+    run:
+        src_rasters = glob.glob("{0}/*.tif".format(input))
+        # Clean the log
+        shell('echo "" > {0} 2>&1'.format(log))
+        # The output needs to be manually created if it doesn't exist
+        if not os.path.exists(output.dir):
+            mkdir_p(output.dir)
+        for i in range(0, len(src_rasters)):
+            original_raster = src_rasters[i]
+            # There might be a whitespace at the end of the basename
+            raster = original_raster.replace(" .", ".")
+            # Replace " " with "_" and turn name into lower case
+            raster = raster.replace(" ", "_").lower()
+            # Place translated files to "data" dir
+            raster = raster.replace(input.dir, output.dir)
+            # Traslate using gdal_translate, comress using DEFLATE
+            shell('echo "Traslating {0} to {1}" >> {2} 2>&1'.format(original_raster, raster, log))
+            shell("gdal_translate -of GTiff -co COMPRESS=DEFLATE '{0}' '{1}' >> {2} 2>&1".format(original_raster, raster, log))
