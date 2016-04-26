@@ -1,13 +1,13 @@
-Archive:  data/originals/Archive.zip
-  inflating: data/megabird_richness_eoagrid_eu.dbf  
-  inflating: data/megabird_richness_eoagrid_eu.prj  
-  inflating: data/megabird_richness_eoagrid_eu.shp  
-  inflating: data/megabird_richness_eoagrid_eu.shx  
-  inflating: data/megafauna_union.dbf  
-  inflating: data/megafauna_union.prj  
-  inflating: data/megafauna_union.shp  
-  inflating: data/megafauna_union.shx  
-  inflating: data/megamammal_richness_cgrs_eu.dbf  
-  inflating: data/megamammal_richness_cgrs_eu.prj  
-  inflating: data/megamammal_richness_cgrs_eu.shp  
-  inflating: data/megamammal_richness_cgrs_eu.shx  
+Archive:  data/org/Archive.zip
+  inflating: data/megafauna/megabird_richness_eoagrid_eu.dbf  
+  inflating: data/megafauna/megabird_richness_eoagrid_eu.prj  
+  inflating: data/megafauna/megabird_richness_eoagrid_eu.shp  
+  inflating: data/megafauna/megabird_richness_eoagrid_eu.shx  
+  inflating: data/megafauna/megafauna_union.dbf  
+  inflating: data/megafauna/megafauna_union.prj  
+  inflating: data/megafauna/megafauna_union.shp  
+  inflating: data/megafauna/megafauna_union.shx  
+  inflating: data/megafauna/megamammal_richness_cgrs_eu.dbf  
+  inflating: data/megafauna/megamammal_richness_cgrs_eu.prj  
+  inflating: data/megafauna/megamammal_richness_cgrs_eu.shp  
+  inflating: data/megafauna/megamammal_richness_cgrs_eu.shx  
