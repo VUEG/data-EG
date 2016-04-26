@@ -1,7 +1,5 @@
-import errno
 import glob
 import os
-import shutil
 
 DATASETS = ['agrobiodiversity_species_richness',
             'carbon_sequestration',
@@ -17,16 +15,6 @@ DATASETS = ['agrobiodiversity_species_richness',
             'species_richness_farmland_birds_original1',
             'species_richness_vascular_plants']
 
-# Custom function for "mkdir -p" behaviour in Python
-def mkdir_p(path):
-    try:
-        os.makedirs(path)
-    except OSError as exc:  # Python >2.5
-        if exc.errno == errno.EEXIST and os.path.isdir(path):
-            pass
-        else:
-            raise
-
 rule all:
   input:
     expand("data/pges/{dataset}.{ext}", dataset=DATASETS, ext=['tif'])
@@ -34,9 +22,9 @@ rule all:
 # Rule to extract the data from from the 7z archive
 rule extract:
     input:
-        "data/PG mapping for LUKE.7z"
+        "data/org/PG mapping for LUKE.7z"
     output:
-        temp("data/org")
+        temp("data/org/pges")
     log:
         "log/extract.log"
     message: "Extracting .tif and .tfw files from {input}."
@@ -52,7 +40,7 @@ rule extract:
 # of of whitespaces and put names in full lower case.
 rule translate:
     input:
-        dir="data/org"
+        dir="data/org/pges"
     output:
         dir="data/pges",
         dst_rasters=expand("data/pges/{dataset}.{ext}", dataset=DATASETS, ext=['tif'])
@@ -64,8 +52,7 @@ rule translate:
         # Clean the log
         shell('echo "" > {0} 2>&1'.format(log))
         # The output needs to be manually created if it doesn't exist
-        if not os.path.exists(output.dir):
-            mkdir_p(output.dir)
+        shell("mkdir -p {output.dir}")
         for i in range(0, len(src_rasters)):
             original_raster = src_rasters[i]
             # There might be a whitespace at the end of the basename
