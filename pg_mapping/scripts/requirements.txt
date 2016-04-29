@@ -1,0 +1,2 @@
+-e git://github.com/VUEG/egpackager#egg=egpackager
+-e git://github.com/VUEG/datapackage@raster-datapackage#egg=datapackage
