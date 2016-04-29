@@ -16,8 +16,23 @@ DATASETS = ['agrobiodiversity_species_richness',
             'species_richness_vascular_plants']
 
 rule all:
-  input:
-    expand("data/pges/{dataset}.{ext}", dataset=DATASETS, ext=['tif'])
+    input:
+        expand(["data/pges/{dataset}/{dataset}.{ext}",
+                "data/pges/{dataset}/datapackage.json"], dataset=DATASETS,
+                ext=['tif'])
+
+# Rule to create datapackage metadata for the resources
+rule create_metadata:
+    params:
+        # This Google spreadsheet holds metadata for PGs datasets.
+        gspread_uri="https://docs.google.com/spreadsheets/d/1MmWfJWktF33SMscCfUzE-GhYj1X0M4HB3FOF9IbHPjk/edit?usp=sharing",
+        gpsread_spreadsheet_name="EG-dmp",
+        gpsread_worksheet_name="datasets",
+        gpsread_credentials="scripts/secret-EGpackager-4b30d0d339ed.json"
+    input:
+        expand("data/pges/{dataset}.{ext}", dataset=DATASETS, ext=['tif'])
+    script:
+        "scripts/create_metadata.py"
 
 # Rule to extract the data from from the 7z archive
 rule extract:
@@ -42,8 +57,9 @@ rule translate:
     input:
         dir="data/org/pges"
     output:
-        dir="data/pges",
-        dst_rasters=expand("data/pges/{dataset}.{ext}", dataset=DATASETS, ext=['tif'])
+        dirs=expand("data/pges/{dataset}", dataset=DATASETS),
+        dst_rasters=expand("data/pges/{dataset}/{dataset}.{ext}",
+                           dataset=DATASETS, ext=['tif'])
     log:
         "log/translate.log"
     message: "Translating files in {input.dir}"
@@ -51,8 +67,6 @@ rule translate:
         src_rasters = glob.glob("{0}/*.tif".format(input))
         # Clean the log
         shell('echo "" > {0} 2>&1'.format(log))
-        # The output needs to be manually created if it doesn't exist
-        shell("mkdir -p {output.dir}")
         for i in range(0, len(src_rasters)):
             original_raster = src_rasters[i]
             # There might be a whitespace at the end of the basename
@@ -60,7 +74,9 @@ rule translate:
             # Replace " " with "_" and turn name into lower case
             raster = raster.replace(" ", "_").lower()
             # Place translated files to "data" dir
-            raster = raster.replace(input.dir, output.dir)
+            output_dir = output.dirs[i]
+            raster = raster.replace(input.dir, output_dir)
+            shell("mkdir -p {0}".format(output_dir))
             # Traslate using gdal_translate, comress using DEFLATE
             shell('echo "Traslating {0} to {1}" >> {2} 2>&1'.format(original_raster, raster, log))
             shell("gdal_translate -of GTiff -co COMPRESS=DEFLATE '{0}' '{1}' >> {2} 2>&1".format(original_raster, raster, log))
