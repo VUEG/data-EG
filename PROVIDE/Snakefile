@@ -17,14 +17,14 @@ DATASETS = ['agrobiodiversity_species_richness',
 
 rule all:
     input:
-        expand(["data/pges/{dataset}/datapackage.json"], dataset=DATASETS)
+        expand(["data/provide/{dataset}/datapackage.json"], dataset=DATASETS)
 
 # Rule to extract the data from from the 7z archive
 rule extract:
     input:
         "data/org/PG mapping for LUKE.7z"
     output:
-        temp("data/org/pges")
+        temp("data/org/provide")
     log:
         "log/extract.log"
     message: "Extracting .tif and .tfw files from {input}."
@@ -40,10 +40,10 @@ rule extract:
 # of of whitespaces and put names in full lower case.
 rule translate:
     input:
-        dir="data/org/pges"
+        dir="data/org/provide"
     output:
-        dirs=expand("data/pges/{dataset}", dataset=DATASETS),
-        dst_rasters=expand("data/pges/{dataset}/{dataset}.{ext}",
+        dirs=expand("data/provide/{dataset}", dataset=DATASETS),
+        dst_rasters=expand("data/provide/{dataset}/{dataset}.{ext}",
                            dataset=DATASETS, ext=['tif'])
     log:
         "log/translate.log"
@@ -75,8 +75,8 @@ rule create_metadata:
         gpsread_worksheet_name="datasets",
         gpsread_credentials="scripts/secret-EGpackager-4b30d0d339ed.json"
     input:
-        expand("data/pges/{dataset}/{dataset}.{ext}", dataset=DATASETS, ext=['tif'])
+        expand("data/provide/{dataset}/{dataset}.{ext}", dataset=DATASETS, ext=['tif'])
     output:
-        expand(["data/pges/{dataset}/datapackage.json"], dataset=DATASETS)
+        expand(["data/provide/{dataset}/datapackage.json"], dataset=DATASETS)
     script:
         "scripts/create_metadata.py"
