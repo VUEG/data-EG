@@ -4,8 +4,8 @@ last_modified: 2016-03-23
 modified_by: Joona Lehtomäki
 received_from: Peter Verburg
 files:
-	- data/originals/Archive.zip
-	- data/originals/megafauna_sp.xlsx
+	- data/org/Archive.zip
+	- data/org/megafauna_sp.xlsx
 
 ## Additional information
 
