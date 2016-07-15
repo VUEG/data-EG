@@ -2,7 +2,7 @@ import glob
 
 ## GLOBALS --------------------------------------------------------------------
 
-DATASETS = ['erosion_control']
+DATASETS = ['erosion_prevention']
 
 ## FUNCTIONS ------------------------------------------------------------------
 
@@ -60,6 +60,8 @@ rule translate:
             # Get rid of the intermediate "erosion" folder and rename
             raster = raster.replace("/erosion_control/erosion/",
                                     "/erosion_prevention/")
+            raster = raster.replace("control",
+                                    "prevention")
             # Traslate using gdal_translate, comress using DEFLATE
             shell('echo "Traslating {0} to {1}" >> {2} 2>&1'.format(original_raster, raster, log))
             shell("gdal_translate -of GTiff -co COMPRESS=DEFLATE '{0}' '{1}' >> {2} 2>&1".format(original_raster, raster, log))
