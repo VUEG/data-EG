@@ -1,0 +1,65 @@
+import glob
+
+## GLOBALS --------------------------------------------------------------------
+
+DATASETS = ['erosion_control']
+
+## FUNCTIONS ------------------------------------------------------------------
+
+def convert(name):
+    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
+    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
+
+## RULES ----------------------------------------------------------------------
+
+rule all:
+  input:
+    expand("data/erosion_prevention/{dataset}.{ext}", dataset=DATASETS,
+           ext=['tif'])
+
+# Rule to extract the data from from the zip archive.
+rule extract:
+    input:
+        "data/org/erosion.zip"
+    output:
+        temp("data/org/erosion_control")
+    log:
+        "log/extract.log"
+    message: "Extracting raster(s) from {input}."
+    run:
+        # Only extract selected file(s)
+        raster_files = ' '.join(["erosion/ErosControl.tif",
+                                 "erosion/ErosControl.tfw"])
+        shell("unzip -o {0} {1} -d {2} >& {3}".format(input[0], raster_files, output[0], log[0]))
+
+# Rule to translate all rasters using compression. Also, translation makes
+# the use of TFW files unnecessary. Rename the files at the same time: get rid
+# of of whitespaces and put names in full lower case.
+rule translate:
+    input:
+        rules.extract.output
+    output:
+        rules.all.input
+    log:
+        "log/translate.log"
+    message: "Translating files in {input}"
+    run:
+        src_rasters = glob.glob("{0}/erosion/*.tif".format(input))
+        # Clean the log
+        shell('echo "" > {0} 2>&1'.format(log))
+        for i in range(0, len(src_rasters)):
+            original_raster = src_rasters[i]
+            # There might be a whitespace at the end of the basename
+            raster = original_raster.replace(" .", ".")
+            # Tweak the name
+            raster = raster.replace("Eros", "erosion")
+            # Convert from CamelCase to under_score
+            raster = convert(raster)
+            # Place translated files to "data" dir
+            raster = raster.replace("org/", "")
+            # Get rid of the intermediate "erosion" folder and rename
+            raster = raster.replace("/erosion_control/erosion/",
+                                    "/erosion_prevention/")
+            # Traslate using gdal_translate, comress using DEFLATE
+            shell('echo "Traslating {0} to {1}" >> {2} 2>&1'.format(original_raster, raster, log))
+            shell("gdal_translate -of GTiff -co COMPRESS=DEFLATE '{0}' '{1}' >> {2} 2>&1".format(original_raster, raster, log))
