@@ -1,10 +1,10 @@
 ## Erosion prevention
 
-last_modified: 2016-07-15
-modified_by: Joona Lehtomäki
-received_from: Willem Verhagen
+last_modified: 2016-07-15  
+modified_by: Joona Lehtomäki  
+received_from: Willem Verhagen  
 files:
-	- data/org/erosion.zip
+	- data/org/erosion.zip  
 
 ## Additional information
 
