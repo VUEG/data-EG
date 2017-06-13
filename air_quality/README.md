@@ -8,7 +8,7 @@ files:
 
 ## Additional information
 
-point_of_origin: Willem Verhagen <willem.verhagen@vu.nl>
-date: 2017-06-13
+point_of_origin: Willem Verhagen <willem.verhagen@vu.nl>  
+date: 2017-06-13  
 processing: https://github.com/VUEG/data-EG/tree/master/air_quality  
-references:
+references:  
